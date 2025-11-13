@@ -1,14 +1,16 @@
 import { createMemoryHistory, createRouter } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
-import SettingView from '../views/SettingView.vue';
+import ChannelListView from '../views/ChannelListView.vue';
+import ChannelDetailView from '../views/ChannelDetailView.vue';
 
 const routes = [
     { path: '/', component: HomeView },
-    { path: '/settings', component: SettingView }
+    { path: '/channels', component: ChannelListView },
+    { path: '/channels/:id', component: ChannelDetailView }
 ];
 
 export const router = createRouter({
     history: createMemoryHistory(),
     routes,
-    linkActiveClass: 'bg-gray-700'
+    linkActiveClass: 'bg-primary text-primary-content',
 });
