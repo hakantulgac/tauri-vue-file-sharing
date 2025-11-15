@@ -1,12 +1,29 @@
 <script setup>
 import { useRouter } from "vue-router";
-import SharingInfo from "../components/SharingInfo.vue";
+import { ref, onMounted } from "vue";
+import { getChannels } from "../services/channels";
+import ShareDialogButton from "../components/ShareDialogButton.vue";
+import DeleteChannelButton from "../components/DeleteChannelButton.vue";
 
 const router = useRouter();
+const channel_list = ref([]);
 
-const navigateToChannelDetail = () => {
-  router.push(`/channels/${123}`);
+const navigateToChannelDetail = (id) => {
+  router.push(`/channels/${id}`);
 };
+
+const updateChannels = (id) => {
+  channel_list.value = channel_list.value.filter(i => i.id !== id);
+}
+
+onMounted(async () => {
+  try {
+    const response = await getChannels();
+    channel_list.value = response.data;
+  } catch (error) {
+    console.log("Server error");
+  }
+});
 </script>
 
 <template>
@@ -16,37 +33,20 @@ const navigateToChannelDetail = () => {
     </li>
 
     <li
+      v-for="channel in channel_list"
+      :key="channel.id"
       class="list-row bg-primary text-primary-content my-1 border border-green-500 opacity-90 hover:opacity-100 transition"
     >
-      <div class="grid grid-cols-2 gap-1">
-        <i class="pi pi-images text-green-500"></i>
-        <i class="pi pi-file-pdf text-red-500"></i>
-        <i class="pi pi-video text-purple-500"></i>
-        <i class="pi pi-file text-blue-500"></i>
-      </div>
-      <div @click="navigateToChannelDetail" class="cursor-pointer">
-        <div>CODE: 845246</div>
+      <i class="pi pi-folder text-green-500 text-2xl mt-2"></i>
+      <div @click="navigateToChannelDetail(channel.id)" class="cursor-pointer">
+        <div>CODE: {{ channel.code }}</div>
         <div class="text-xs uppercase font-semibold opacity-60">
-          6 Files, 845mb, 12.06.2020
+          {{ channel.file_count }} Files - {{ channel.total_size }} byte -
+          {{ new Date(channel.date_created).toLocaleString() }}
         </div>
       </div>
-      <button
-        class="btn btn-square btn-ghost -mr-4"
-        onclick="my_modal_2.showModal()"
-      >
-        <i class="pi pi-qrcode"></i>
-      </button>
-      <dialog id="my_modal_2" class="modal">
-        <div class="modal-box">
-          <SharingInfo />
-        </div>
-        <form method="dialog" class="modal-backdrop">
-          <button>close</button>
-        </form>
-      </dialog>
-      <button class="btn btn-square btn-ghost">
-        <i class="pi pi-trash text-red-500"></i>
-      </button>
+      <ShareDialogButton :code="channel.code" />
+      <DeleteChannelButton :channelId="channel.id" @update="updateChannels" />
     </li>
   </ul>
 </template>

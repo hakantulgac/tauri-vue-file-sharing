@@ -15,7 +15,6 @@ const goToChannelList = () => {
       <button class="btn btn-primary">Add File</button>
     </div>
     <div>
-      <button class="btn btn-success mr-1">Save</button>
       <button class="btn btn-error">Delete Channel</button>
       <button @click="goToChannelList" class="btn btn-ghost">
         <i class="pi pi-times"></i>
